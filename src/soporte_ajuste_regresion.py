@@ -63,11 +63,7 @@ class AnalisisModelosRegresion:
         self.predicciones[modelo]["train"] = self.mejor_modelo[modelo].predict(self.X_train)
         self.predicciones[modelo]["test"] = self.mejor_modelo[modelo].predict(self.X_test)
 
-    def obtener_resultados(self):
-        """
-        Genera un DataFrame con las predicciones y los residuos de los modelos ajustados.
-        """
-        def crear_resultados(real, predicho, conjunto, modelo):
+    def crear_resultados(real, predicho, conjunto, modelo):
             return pd.DataFrame({
                 "Real": real,
                 "Predicho": predicho,
@@ -75,13 +71,19 @@ class AnalisisModelosRegresion:
                 "Modelo": modelo,
                 "Residuos": real - predicho,
             })
+    
+    def obtener_resultados(self, modelo):
+        """
+        Genera un DataFrame con las predicciones y los residuos de los modelos ajustados.
+        """
+    
 
         resultados = []
         for modelo, pred in self.predicciones.items():
             if pred["train"] is not None and pred["test"] is not None:
                 resultados.extend([
-                    crear_resultados(self.y_train, pred["train"], "Train", modelo),
-                    crear_resultados(self.y_test, pred["test"], "Test", modelo),
+                    self.crear_resultados(self.y_train, pred["train"], "Train", modelo),
+                    self.crear_resultados(self.y_test, pred["test"], "Test", modelo),
                 ])
 
         if not resultados:
@@ -117,21 +119,6 @@ class AnalisisModelosRegresion:
         }
         return pd.DataFrame(metricas)
 
-    def plot_residuos(self, modelo):
-        """
-        Plotea los residuos del modelo ajustado.
-        """
-        if self.resultados is None:
-            raise ValueError("Debe obtener los resultados antes de plotear.")
-
-        data = self.resultados[self.resultados["Modelo"] == modelo]
-        _, ax = plt.subplots(1, 2, figsize=(15, 5))
-        sns.histplot(data[data["Conjunto"] == "Train"], x="Residuos", kde=True, ax=ax[0], color="blue")
-        sns.histplot(data[data["Conjunto"] == "Test"], x="Residuos", kde=True, ax=ax[1], color="green")
-        ax[0].set_title(f"Residuos - Train ({modelo})")
-        ax[1].set_title(f"Residuos - Test ({modelo})")
-        plt.tight_layout()
-        plt.show()
 
     def importancia_predictores(self, modelo):
         """

@@ -77,7 +77,6 @@ class AnalisisChiCuadrado:
         else:
             print("El p-valor >= 0.05, no hay diferencias entre los grupos.")
 
-
 class Encoding:
     """
     Clase para realizar diferentes tipos de codificación en un DataFrame.
