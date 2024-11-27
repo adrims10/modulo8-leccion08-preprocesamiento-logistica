@@ -22,7 +22,7 @@ from scipy.stats import chi2_contingency
 # -----------------------------------------------------------------------
 from sklearn.preprocessing import OneHotEncoder, OrdinalEncoder, LabelEncoder # para poder aplicar los métodos de OneHot, Ordinal,  Label y Target Encoder 
 from category_encoders import TargetEncoder
-
+import pickle
 
 class AnalisisChiCuadrado:
     def __init__(self, dataframe, variable_predictora, variable_respuesta):
@@ -77,6 +77,7 @@ class AnalisisChiCuadrado:
         else:
             print("El p-valor >= 0.05, no hay diferencias entre los grupos.")
 
+
 class Encoding:
     """
     Clase para realizar diferentes tipos de codificación en un DataFrame.
@@ -127,7 +128,9 @@ class Encoding:
             self.dataframe = pd.concat([self.dataframe.reset_index(drop=True), oh_df.reset_index(drop=True)], axis=1)
         
         self.dataframe.drop(columns=col_encode, inplace=True)
-    
+        # Guardar el modelo
+        with open('transformer_one.pkl', 'wb') as f:
+            pickle.dump(one_hot_encoder, f)
         return self.dataframe
     
     def get_dummies(self, prefix='category', prefix_sep="_"):
@@ -226,10 +229,17 @@ class Encoding:
 
         # si hay contenido en la lista 
         if col_encode:
+            print(col_encode)
   
             target_encoder = TargetEncoder(cols=col_encode)
             variables_encoded = target_encoder.fit_transform(self.dataframe, self.dataframe[self.variable_respuesta])
-
+        
+        for col in col_encode:
+            display(self.dataframe[col].value_counts())
+        # Guardar el modelo
+        with open('transformer_target.pkl', 'wb') as f:
+            pickle.dump(target_encoder, f)
+            
         return variables_encoded
 
     def frequency_encoding(self):

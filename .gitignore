@@ -21,3 +21,5 @@ rad.json
 #Test results file
 TestResults.xml
 mejor_modelo.pkl
+transformer_one.pkl
+transformer_target.pkl
